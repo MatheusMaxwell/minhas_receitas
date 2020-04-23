@@ -11,14 +11,14 @@ class Recipe {
   Recipe();
   //Recipe(this._id, this._name, this._tags, this._ingredients, this._preparationMode, this._sharedIds, this._userId);
 
-  Recipe.fromMap(dynamic obj){
-    this._id = obj["id"];
+  Recipe.fromMap(dynamic obj, String id){
+    this._id = id;
     this._name = obj["name"];
     this._tags = obj["tags"];
     this._ingredients = getIngredients(obj["ingredients"]);
-    this._preparationMode = obj["preparation_mode"];
-    this._sharedIds = obj["shared_ids"];
-    this._userId = obj["user_id"];
+    this._preparationMode = obj["preparationMode"];
+    this._sharedIds = obj["sharedIds"];
+    this._userId = obj["userId"];
   }
 
   Map<String, dynamic> toMap(){
@@ -26,9 +26,9 @@ class Recipe {
     map["name"] = _name;
     map["tags"] = _tags;
     map["ingredients"] = _ingredients;
-    map["preparation_mode"] = _preparationMode;
-    map["shared_ids"] = _sharedIds;
-    map["user_id"] = _userId;
+    map["preparationMode"] = _preparationMode;
+    map["sharedIds"] = _sharedIds;
+    map["userId"] = _userId;
     return map;
   }
 
@@ -37,9 +37,9 @@ class Recipe {
       "name": _name,
       "tags": _tags,
       "ingredients": _ingredients,
-      "preparation_mode": _preparationMode,
-      "shared_ids": _sharedIds,
-      "user_id": _userId
+      "preparationMode": _preparationMode,
+      "sharedIds": _sharedIds,
+      "userId": _userId
     };
 
   }

@@ -15,6 +15,10 @@ class ApiFirebase{
   Future<QuerySnapshot> getDataCollection(){
     return ref.where("userId", isEqualTo: userId).getDocuments();
   }
+  Future<QuerySnapshot> getDataCollectionShared(){
+    return ref.where("sharedIds", arrayContains: "#"+userId+"#").getDocuments();
+  }
+
   Stream<QuerySnapshot> streamDataCollection() {
     return ref.snapshots() ;
   }

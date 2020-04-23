@@ -64,6 +64,12 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
           setState(() {
             _currentIndex = index;
           });
+          if(index == 0){
+            _presenter.getRecipes();
+          }
+          else{
+            _presenter.getRecipesShared();
+          }
         },
         items: allDestinations.map((Destination destination) {
           return BottomNavigationBarItem(
@@ -140,5 +146,13 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
      _refreshing = false;
      recipes = list;
    });
+  }
+
+  @override
+  returnListShared(List<Recipe> list) {
+    setState(() {
+      _refreshing = false;
+      recipes = list;
+    });
   }
 }

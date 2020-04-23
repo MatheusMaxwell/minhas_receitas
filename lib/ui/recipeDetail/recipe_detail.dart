@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:minhasreceitas/model/Recipe.dart';
+import 'package:minhasreceitas/ui/recipeDetail/recipe_detail_presenter.dart';
 import 'package:minhasreceitas/utils/ApplicationSingleton.dart';
+import 'package:minhasreceitas/utils/alerts.dart';
 import 'package:minhasreceitas/utils/widgets.dart';
 
 class RecipeDetail extends StatefulWidget {
@@ -8,19 +10,18 @@ class RecipeDetail extends StatefulWidget {
   _RecipeDetailState createState() => _RecipeDetailState();
 }
 
-class _RecipeDetailState extends State<RecipeDetail> {
-  Recipe recipe;
+class _RecipeDetailState extends State<RecipeDetail> implements RecipeDetailContract{
+  Recipe recipe = ApplicationSingleton.recipe;
   bool _isUpdate = false;
   final TextEditingController prepModController = new TextEditingController();
   final TextEditingController nameController = new TextEditingController();
-  List<String> ingredients = List<String>();
+  RecipeDetailPresenter _presenter;
+  bool _refreshing = false;
 
-  @override
-  void initState() {
-    recipe = ApplicationSingleton.recipe;
-    ingredients = recipe.ingredients;
-    super.initState();
+  _RecipeDetailState(){
+    _presenter = RecipeDetailPresenter(this);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +31,23 @@ class _RecipeDetailState extends State<RecipeDetail> {
         centerTitle: true,
         actions: <Widget>[
           _isUpdate ? _iconSave() : _iconEdit(),
-          _isUpdate ? _iconCancel() : spaceHorizon(0)
+          _isUpdate ? _iconCancel() : _iconDelete()
         ],
       ),
 
       body: _body(),
+    );
+  }
+
+  _iconDelete(){
+    return Padding(
+        padding: EdgeInsets.only(right: 20.0),
+        child: GestureDetector(
+          onTap: _delete,
+          child: Icon(
+            Icons.delete, color: Colors.white,
+          ),
+        )
     );
   }
 
@@ -54,7 +67,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
     return Padding(
         padding: EdgeInsets.only(right: 20.0),
         child: GestureDetector(
-          onTap: (){},
+          onTap: _save,
           child: Icon(
             Icons.save, color: Colors.white,
           ),
@@ -74,10 +87,21 @@ class _RecipeDetailState extends State<RecipeDetail> {
     );
   }
 
+  _save(){
+
+  }
+
+  _delete(){
+
+  }
+
   _cancel(){
     setState(() {
       _isUpdate = false;
+      _refreshing = true;
     });
+    _presenter.getRecipeById(recipe.id);
+
   }
 
   _edit(){
@@ -90,18 +114,24 @@ class _RecipeDetailState extends State<RecipeDetail> {
     nameController.text = recipe.name;
     return Padding(
       padding: EdgeInsets.all(10.0),
-      child: ListView(
+      child: Stack(
         children: <Widget>[
-          _isUpdate ? myTextField("Nome", nameController) : _recipeName(),
-          spaceVert(40),
-          _title(" INGREDIENTES"),
-          spaceVert(5),
-          _listIngredients(),
-          spaceVert(40),
-          _title(" MODO DE PREPARO"),
-          spaceVert(5),
-          _preparationMode()
+          ListView(
+            children: <Widget>[
+              _isUpdate ? myTextField("Nome", nameController) : _recipeName(),
+              spaceVert(40),
+              _title(" INGREDIENTES"),
+              spaceVert(5),
+              _listIngredients(),
+              spaceVert(40),
+              _title(" MODO DE PREPARO"),
+              spaceVert(5),
+              _preparationMode()
+            ],
+          ),
+          _refreshing ? circleProgress() : spaceHorizon(0)
         ],
+
       ),
     );
   }
@@ -177,7 +207,11 @@ class _RecipeDetailState extends State<RecipeDetail> {
                             Text("- "+recipe.ingredients[index], style: TextStyle(fontSize: 16),),
                             _isUpdate ? IconButton(
                               icon: Icon(Icons.remove_circle, color: Colors.red,),
-                              onPressed: (){},
+                              onPressed: (){
+                                setState(() {
+                                  recipe.ingredients.removeAt(index);
+                                });
+                              },
                             ) : spaceHorizon(0)
                           ],
                         ),
@@ -195,7 +229,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
 
   Future<void> _dialogNewIngredient(){
     final TextEditingController controllerIngredient = new TextEditingController();
-    String ingredient;
+
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -208,9 +242,6 @@ class _RecipeDetailState extends State<RecipeDetail> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
-                onChanged: (value) {
-                  ingredient = value;
-                },
                 controller: controllerIngredient,
                 autofocus: true,
               ),
@@ -220,12 +251,14 @@ class _RecipeDetailState extends State<RecipeDetail> {
             FlatButton(
               child: Text('Adicionar'),
               onPressed: () {
-                if(ingredients == null){
-                  ingredients = new List<String>();
+                if(recipe.ingredients == null){
+                  recipe.ingredients = new List<String>();
                 }
-                setState(() {
-                  ingredients.add(ingredient);
-                });
+                if(controllerIngredient.text.isNotEmpty){
+                  setState(() {
+                    recipe.ingredients.add(controllerIngredient.text);
+                  });
+                }
                 Navigator.of(context).pop();
               },
             ),
@@ -239,5 +272,20 @@ class _RecipeDetailState extends State<RecipeDetail> {
         );
       },
     );
+  }
+
+  @override
+  onError() {
+    alertOk(context, "Alerta", "Algo deu errado, tente novamente.").whenComplete((){
+      Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  returnRecipe(Recipe recipe) {
+    setState(() {
+      _refreshing = false;
+      this.recipe = recipe;
+    });
   }
 }

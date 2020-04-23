@@ -11,7 +11,15 @@ class RecipeApi extends ChangeNotifier {
   Future<List<Recipe>> getRecipes() async {
     var result = await _api.getDataCollection();
     recipes = result.documents
-        .map((doc) => Recipe.fromMap(doc.data))
+        .map((doc) => Recipe.fromMap(doc.data, doc.documentID))
+        .toList();
+    return recipes;
+  }
+
+  Future<List<Recipe>> getRecipesShared() async {
+    var result = await _api.getDataCollectionShared();
+    recipes = result.documents
+        .map((doc) => Recipe.fromMap(doc.data, doc.documentID))
         .toList();
     return recipes;
   }
@@ -22,7 +30,7 @@ class RecipeApi extends ChangeNotifier {
 
   Future<Recipe> getRecipeById(String id) async {
     var doc = await _api.getDocumentById(id);
-    return  Recipe.fromMap(doc.data) ;
+    return  Recipe.fromMap(doc.data, doc.documentID) ;
   }
 
 

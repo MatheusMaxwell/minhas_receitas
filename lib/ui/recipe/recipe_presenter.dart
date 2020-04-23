@@ -5,6 +5,7 @@ import 'package:minhasreceitas/model/Recipe.dart';
 abstract class RecipeContract {
   listIsEmpty();
   returnList(List<Recipe> list);
+  returnListShared(List<Recipe> list);
   onError();
 }
 
@@ -25,6 +26,21 @@ class RecipePresenter {
     }
     catch(e){
       var i = e.toString();
+      _view.onError();
+    }
+  }
+
+  getRecipesShared() async{
+    try{
+      List<Recipe> list = await api.getRecipesShared();
+      if(list == null || list.isEmpty){
+        _view.listIsEmpty();
+      }
+      else{
+        _view.returnListShared(list);
+      }
+    }
+    catch(e){
       _view.onError();
     }
   }
