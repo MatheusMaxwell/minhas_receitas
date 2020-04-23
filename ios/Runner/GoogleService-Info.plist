@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>503458407965-avh9jfv4utq88ems2rte9fnnlo5n1s36.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.503458407965-avh9jfv4utq88ems2rte9fnnlo5n1s36</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDBLRMiy7Dg_u05b_vUXwPi5VmSnbPbnms</string>
+	<key>GCM_SENDER_ID</key>
+	<string>503458407965</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>br.com.matheusmaxwell</string>
+	<key>PROJECT_ID</key>
+	<string>minhas-receitas-501ba</string>
+	<key>STORAGE_BUCKET</key>
+	<string>minhas-receitas-501ba.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:503458407965:ios:feff27d5d973011bd4c8f4</string>
+	<key>DATABASE_URL</key>
+	<string>https://minhas-receitas-501ba.firebaseio.com</string>
+</dict>
+</plist>
