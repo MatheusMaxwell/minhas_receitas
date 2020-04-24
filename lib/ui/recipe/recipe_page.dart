@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:minhasreceitas/ext/Constants.dart';
+import 'package:minhasreceitas/model/Notification.dart';
 import 'package:minhasreceitas/model/Recipe.dart';
 import 'package:minhasreceitas/ui/recipe/recipe_presenter.dart';
 import 'package:minhasreceitas/utils/ApplicationSingleton.dart';
@@ -12,11 +14,13 @@ class RecipePage extends StatefulWidget {
   _RecipePageState createState() => _RecipePageState();
 }
 
-class _RecipePageState extends State<RecipePage> implements RecipeContract{
+class _RecipePageState extends State<RecipePage> with TickerProviderStateMixin implements RecipeContract {
   var _currentIndex = 0;
   List<Recipe> recipes = List<Recipe>();
   bool _refreshing = true;
   RecipePresenter _presenter;
+  bool existsNotifications = false;
+  AnimationController _animationController;
 
   _RecipePageState(){
     _presenter = RecipePresenter(this);
@@ -24,7 +28,9 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
 
   @override
   void initState() {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _presenter.getRecipes();
+    _presenter.getNotifications();
     super.initState();
   }
 
@@ -33,10 +39,18 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
     return Scaffold(
       appBar: AppBar(
         title: Text("Receitas"),
+        leading: GestureDetector(
+          onTap: (){
+            Navigator.of(context).pushNamed(Constants.NOTIFICATIONS_PAGE).whenComplete((){
+              _getRecipes();
+            });
+          },
+          child: existsNotifications ? _iconExistsNotification() : Icon(Icons.notifications_none),
+        ),
         centerTitle: true,
         actions: <Widget>[
           Padding(
-              padding: EdgeInsets.only(right: 20.0),
+              padding: EdgeInsets.only(right: 10.0),
               child: GestureDetector(
                 onTap: () {
                   ApplicationSingleton.baseAuth.signOut();
@@ -49,14 +63,14 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _currentIndex == 0 ? FloatingActionButton(
         child: Icon(Icons.add, color: Colors.white,),
         onPressed: (){
           Navigator.of(context).pushNamed(Constants.RECIPE_REGISTER).whenComplete((){
             _presenter.getRecipes();
           });
         },
-      ),
+      ):null,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.red,
         currentIndex: _currentIndex,
@@ -64,12 +78,7 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
           setState(() {
             _currentIndex = index;
           });
-          if(index == 0){
-            _presenter.getRecipes();
-          }
-          else{
-            _presenter.getRecipesShared();
-          }
+          _getRecipes();
         },
         items: allDestinations.map((Destination destination) {
           return BottomNavigationBarItem(
@@ -79,6 +88,15 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
         }).toList(),
       ),
       body: _body()
+    );
+  }
+
+  _iconExistsNotification(){
+    return RotationTransition(
+        turns: Tween(begin: 0.0, end: -.1)
+            .chain(CurveTween(curve: Curves.elasticIn))
+            .animate(_animationController),
+        child: Icon(Icons.notifications_active)
     );
   }
 
@@ -102,6 +120,7 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
     );
   }
 
+
   _search(String text){
 
   }
@@ -112,7 +131,7 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index){
         return GestureDetector(
-          child: cardSingleText(recipes[index].name),
+          child: cardSingleText(recipes[index].name, recipes[index].imageUrl),
           onTap: (){
             _openRecipeDetail(recipes[index]);
           },
@@ -121,9 +140,31 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
     ) : emptyState();
   }
 
+  void _runAnimationIconNotification() async {
+    for (int i = 0; i < 3; i++) {
+      await _animationController.forward();
+      await _animationController.reverse();
+    }
+  }
+
   _openRecipeDetail(Recipe recipe){
-    ApplicationSingleton.recipe = recipe;
-    Navigator.of(context).pushNamed(Constants.RECIPE_DETAIL);
+    ApplicationSingleton.recipeId = recipe.id;
+    Navigator.of(context).pushNamed(Constants.RECIPE_DETAIL).whenComplete((){
+      _getRecipes();
+    });
+  }
+
+  _getRecipes(){
+    setState(() {
+      _refreshing = true;
+    });
+    if(_currentIndex == 0){
+      _presenter.getRecipes();
+    }
+    else{
+      _presenter.getRecipesShared();
+    }
+    _presenter.getNotifications();
   }
 
   @override
@@ -137,6 +178,9 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
 
   @override
   onError() {
+    setState(() {
+      _refreshing = false;
+    });
     alertOk(context, "Erro", "Algo de errado aconteceu. Tente novamente.");
   }
 
@@ -149,10 +193,16 @@ class _RecipePageState extends State<RecipePage> implements RecipeContract{
   }
 
   @override
-  returnListShared(List<Recipe> list) {
+  returnNotifications(List<MyNotification> list) {
     setState(() {
-      _refreshing = false;
-      recipes = list;
+      if(list.isNotEmpty) {
+        existsNotifications = true;
+        _runAnimationIconNotification();
+      }
+      else{
+        existsNotifications = false;
+      }
     });
   }
+
 }

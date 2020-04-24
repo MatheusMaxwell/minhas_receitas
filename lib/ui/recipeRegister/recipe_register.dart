@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:minhasreceitas/model/Recipe.dart';
 import 'package:minhasreceitas/ui/recipeRegister/recipe_register_presenter.dart';
 import 'package:minhasreceitas/utils/alerts.dart';
@@ -15,6 +19,9 @@ class _RecipeRegisterState extends State<RecipeRegister> implements RecipeRegist
   final TextEditingController prepModController = new TextEditingController();
   RecipeRegisterPresenter _presenter;
   bool _refreshing = false;
+  FirebaseStorage _storage = FirebaseStorage.instance;
+  String localImage = "assets/images/emptyimage.jpg";
+  File imageFile;
 
   _RecipeRegisterState(){
     _presenter = RecipeRegisterPresenter(this);
@@ -50,6 +57,16 @@ class _RecipeRegisterState extends State<RecipeRegister> implements RecipeRegist
           ListView(
             children: <Widget>[
               myTextField("Nome", nameController),
+              spaceVert(20),
+              GestureDetector(
+                child: imageRegister(localImage, context),
+                onTap: ()async{
+                  imageFile = await uploadLocalPic();
+                  setState(() {
+                    localImage = imageFile.path;
+                  });
+                },
+              ),
               spaceVert(40),
               _title(" INGREDIENTES"),
               spaceVert(3),
@@ -74,6 +91,7 @@ class _RecipeRegisterState extends State<RecipeRegister> implements RecipeRegist
       setState(() {
         _refreshing = true;
       });
+      recipe.imageUrl = await uploadPicFirebase();
       recipe.name = nameController.text;
       recipe.preparationMode = prepModController.text;
       await _presenter.insertRecipe(recipe);
@@ -83,6 +101,24 @@ class _RecipeRegisterState extends State<RecipeRegister> implements RecipeRegist
   
   _title(String text){
     return Text(text, style: TextStyle(fontSize: 20, color: Colors.grey),);
+  }
+
+  Future<File> uploadLocalPic() async{
+    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    return file;
+  }
+
+  Future<String> uploadPicFirebase() async {
+    if(imageFile != null){
+      String date = DateTime.now().toString();
+      StorageReference reference = _storage.ref().child("images/$date");
+      StorageUploadTask uploadTask = reference.putFile(imageFile);
+      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+      String url = await taskSnapshot.ref.getDownloadURL();
+
+      return url;
+
+    }
   }
 
   _listIngredients(){

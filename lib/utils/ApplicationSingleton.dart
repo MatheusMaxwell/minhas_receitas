@@ -13,6 +13,6 @@ class ApplicationSingleton {
 
   static Auth baseAuth;
   static FirebaseUser currentUser;
-  static Recipe recipe;
+  static String recipeId;
 
 }

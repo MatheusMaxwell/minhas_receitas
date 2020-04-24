@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:minhasreceitas/data/firebase/FirebaseAuthentication.dart';
 import 'package:minhasreceitas/ui/login/login_page.dart';
+import 'package:minhasreceitas/ui/notifications/notifications_page.dart';
 import 'package:minhasreceitas/ui/recipe/recipe_page.dart';
 import 'package:minhasreceitas/ui/recipeDetail/recipe_detail.dart';
 import 'package:minhasreceitas/ui/recipeRegister/recipe_register.dart';
@@ -19,7 +20,8 @@ final routes = {
   Constants.LOGIN_PAGE: (BuildContext context) => new Login(),
   Constants.RECIPE_PAGE: (BuildContext context) => new RecipePage(),
   Constants.RECIPE_REGISTER: (BuildContext context) => new RecipeRegister(),
-  Constants.RECIPE_DETAIL: (BuildContext context) => new RecipeDetail()
+  Constants.RECIPE_DETAIL: (BuildContext context) => new RecipeDetail(),
+  Constants.NOTIFICATIONS_PAGE: (BuildContext context) => new NotificationsPage()
 };
 
 class MyApp extends StatelessWidget {

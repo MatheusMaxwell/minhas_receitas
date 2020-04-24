@@ -5,7 +5,8 @@ class Recipe {
   List<String> _tags;
   List<String> _ingredients;
   String _preparationMode;
-  String _sharedIds;
+  List<String> _sharedEmails;
+  String _imageUrl;
   String _userId;
 
   Recipe();
@@ -17,7 +18,8 @@ class Recipe {
     this._tags = obj["tags"];
     this._ingredients = getIngredients(obj["ingredients"]);
     this._preparationMode = obj["preparationMode"];
-    this._sharedIds = obj["sharedIds"];
+    this._sharedEmails = getSharedEmails(obj["sharedEmails"]);
+    this._imageUrl = obj["imageUrl"];
     this._userId = obj["userId"];
   }
 
@@ -27,7 +29,8 @@ class Recipe {
     map["tags"] = _tags;
     map["ingredients"] = _ingredients;
     map["preparationMode"] = _preparationMode;
-    map["sharedIds"] = _sharedIds;
+    map["sharedEmails"] = _sharedEmails;
+    map["imageUrl"] = _imageUrl;
     map["userId"] = _userId;
     return map;
   }
@@ -38,7 +41,8 @@ class Recipe {
       "tags": _tags,
       "ingredients": _ingredients,
       "preparationMode": _preparationMode,
-      "sharedIds": _sharedIds,
+      "sharedEmails": _sharedEmails,
+      "imageUrl": _imageUrl,
       "userId": _userId
     };
 
@@ -58,11 +62,32 @@ class Recipe {
 
   }
 
+  static List<String> getSharedEmails(List<dynamic> map) {
 
-  String get sharedIds => _sharedIds;
+    List<String> list = List<String>();
+    if(map != null){
+      for( int i=0; i < map.length; i++ ) {
 
-  set sharedIds(String value) {
-    _sharedIds = value;
+        list.add(map[i].toString());
+
+      }
+    }
+
+    return list;
+
+  }
+
+
+  String get imageUrl => _imageUrl;
+
+  set imageUrl(String value) {
+    _imageUrl = value;
+  }
+
+  List<String> get sharedEmails => _sharedEmails;
+
+  set sharedEmails(List<String> value) {
+    _sharedEmails = value;
   }
 
   String get userId => _userId;

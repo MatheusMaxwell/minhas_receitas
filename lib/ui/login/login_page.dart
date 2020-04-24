@@ -17,7 +17,7 @@ class _LoginState extends State<Login> implements LoginContract {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   bool _refreshing = false;
   LoginPresenter _presenter;
-
+  int _typeLogin = -1;
 
 
   _LoginState(){
@@ -42,24 +42,60 @@ class _LoginState extends State<Login> implements LoginContract {
       color: MyColor.primaryColor,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            spaceVert(20),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Image.asset("assets/images/logo.png"),
-            ),
-            spaceVert(40),
-            textField("Usuário", _loginController, Icons.perm_identity),
-            spaceVert(10),
-            textField("Senha", _passController, Icons.lock),
-            spaceVert(10),
-            buttonWhiteTextPrimary('Entrar', _login)
-          ],
-        ),
+        child: _typeLogin == -1 ? _loginToChoose() : _loginEmailBody(),
       ),
     );
+  }
+
+  _loginToChoose(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        spaceVert(20),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Image.asset("assets/images/logo.png"),
+        ),
+        spaceVert(40),
+        signInButtonEmail(_loginEmailClick),
+        spaceVert(20),
+        signInButtonGoogle(_loginGoogle),
+        spaceVert(20),
+        GestureDetector(
+          onTap: (){},
+          child: Text("Quero me inscrever", style: TextStyle(color: Colors.white, fontSize: 18, decoration: TextDecoration.underline),),
+        )
+      ],
+    );
+  }
+
+  _loginEmailClick(){
+    setState(() {
+      _typeLogin = 0;
+    });
+  }
+
+  _loginEmailBody(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        spaceVert(20),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Image.asset("assets/images/logo.png"),
+        ),
+        spaceVert(40),
+        textField("Usuário", _loginController, Icons.perm_identity),
+        spaceVert(10),
+        textField("Senha", _passController, Icons.lock),
+        spaceVert(10),
+        buttonWhiteTextPrimary('Entrar', _login),
+      ],
+    );
+  }
+
+  _loginGoogle(){
+    _presenter.loginGoogle();
   }
 
   _login(){

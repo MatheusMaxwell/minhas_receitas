@@ -9,7 +9,9 @@ class Constants{
   static const RECIPE_PAGE = '/recipe_page';
   static const RECIPE_REGISTER = '/recipe_register';
   static const RECIPE_DETAIL = '/recipe_detail';
+  static const NOTIFICATIONS_PAGE = '/notifications_page';
 
   //firebase
   static const RECIPES = 'recipes';
+  static const NOTIFICATIONS = 'notifications';
 }

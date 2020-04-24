@@ -32,6 +32,21 @@ class LoginPresenter{
       else
         view.serverError();
     }
+  }
 
+  loginGoogle()async{
+    try{
+      var userId = await baseAuth.signInWithGoogle();
+      if(userId.length > 0 && userId != null){
+        ApplicationSingleton.currentUser = await baseAuth.getCurrentUser();
+        view.loginSuccess();
+      }
+      else{
+        view.loginFailed();
+      }
+    }
+    catch(e){
+        view.serverError();
+    }
   }
 }

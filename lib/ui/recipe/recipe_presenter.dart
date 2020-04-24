@@ -1,18 +1,21 @@
 
+import 'package:minhasreceitas/data/api/NotificationApi.dart';
 import 'package:minhasreceitas/data/api/RecipeApi.dart';
+import 'package:minhasreceitas/model/Notification.dart';
 import 'package:minhasreceitas/model/Recipe.dart';
 
 abstract class RecipeContract {
   listIsEmpty();
   returnList(List<Recipe> list);
-  returnListShared(List<Recipe> list);
   onError();
+  returnNotifications(List<MyNotification> list);
 }
 
 class RecipePresenter {
   RecipeContract _view;
   RecipePresenter(this._view);
   RecipeApi api = new RecipeApi();
+  NotificationApi apiNotifications = new NotificationApi();
 
   getRecipes()async{
     try{
@@ -37,11 +40,23 @@ class RecipePresenter {
         _view.listIsEmpty();
       }
       else{
-        _view.returnListShared(list);
+        _view.returnList(list);
       }
     }
     catch(e){
       _view.onError();
+    }
+  }
+
+  getNotifications()async{
+    try{
+      List<MyNotification> list = await apiNotifications.getNotifications();
+      if(list != null){
+        _view.returnNotifications(list);
+      }
+    }
+    catch(e){
+      print(e);
     }
   }
 }
