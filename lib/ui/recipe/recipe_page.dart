@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:minhasreceitas/ext/Constants.dart';
+import 'package:minhasreceitas/ext/MyColor.dart';
 import 'package:minhasreceitas/model/Notification.dart';
 import 'package:minhasreceitas/model/Recipe.dart';
 import 'package:minhasreceitas/ui/recipe/recipe_presenter.dart';
 import 'package:minhasreceitas/utils/ApplicationSingleton.dart';
 import 'package:minhasreceitas/utils/Destination.dart';
+import 'package:minhasreceitas/utils/HexColor.dart';
 import 'package:minhasreceitas/utils/alerts.dart';
 import 'package:minhasreceitas/utils/widgets.dart';
 
@@ -45,7 +47,7 @@ class _RecipePageState extends State<RecipePage> with TickerProviderStateMixin i
               _getRecipes();
             });
           },
-          child: existsNotifications ? _iconExistsNotification() : Icon(Icons.notifications_none),
+          child: existsNotifications ? _iconExistsNotification() : Icon(Icons.notifications_none,),
         ),
         centerTitle: true,
         actions: <Widget>[
@@ -72,7 +74,7 @@ class _RecipePageState extends State<RecipePage> with TickerProviderStateMixin i
         },
       ):null,
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Color(Constants.primaryColor),
         currentIndex: _currentIndex,
         onTap: (int index) {
           setState(() {

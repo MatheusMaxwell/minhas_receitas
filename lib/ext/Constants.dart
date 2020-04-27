@@ -1,7 +1,7 @@
 
 class Constants{
 
-  static const int primaryColor = 0xFFF44336;
+  static const int primaryColor = 0xFF97160D;
 
   //pages
   static const SPLAS_SCREEN_PAGE = '/';
